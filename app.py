@@ -24,7 +24,9 @@ baseUrlFile = "https://api.telegram.org/file/bot{}".format(api_token)
 @app.route("/")
 def start():    
     r = requests.get(baseUrl+"/getUpdates")
+    # print(baseUrl+"/getUpdates")
     data = r.json()
+    # print(data)
     for i in data['result']:
         id = i['message']['from']['id']
         offset_value = i['update_id']
@@ -40,7 +42,8 @@ def start():
             link = baseUrlFile+"/{}".format(file_path)
             newImage(link, id)
         if 'text' in i['message'] and i['message']['text'] == "/pdf":
-            make_pdfs(id)
+            link = make_pdfs(id)
+            return link
 
     return "Success"
 
@@ -81,28 +84,58 @@ def removeAllOldImages(userId, offset_value):
 def make_pdfs(userId):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM user_{}".format(userId))
-    images = cur.fetchall()
-    pdfs = []
-    for image in images:
-        data = '{"Parameters": [{"Name": "File", "FileValue": {"Url": "' + image[0] +  '"}}, {"Name": "StoreFile", "Value": true}]}'
-        print(data)
-        output = json.loads(data)
-        img_pdf = requests.post(pdf, json=output)
-        final_pdf = img_pdf.json()
-        pdfs.append(final_pdf['Files'][0]['Url'])
-    print(pdfs)
+    links = cur.fetchall()
 
-    # MERGE PDFs
-    data = '''{"Parameters": [{"Name": "Files","FileValues": ['''
-    for i in range(len(pdfs)):
-        data += '{"Url": "' + pdfs[i] +'"}'
-        if i != len(pdfs)-1:
+    
+    pdf_links = []
+    for i in links:
+        data = '{"Parameters": [{"Name": "File","FileValue": {"Url":"' + i[0] + '"}},{"Name": "StoreFile","Value": true}]}'
+        # print(data)
+        output = json.loads(data)
+
+        fin = requests.post(pdf, json=output)
+        response = fin.json()
+        # print(response['Files'][0]['Url'])
+        pdf_links.append(response['Files'][0]['Url'])
+
+
+    data = '{"Parameters": [{"Name": "Files","FileValues": ['
+
+    for i in range(len(pdf_links)):
+        data += '{"Url": " '+ pdf_links[i] +'"}'
+        if(i != len(pdf_links)-1):
             data += ","
+
     data += ']},{"Name": "StoreFile","Value": true}]}'
-    print(data)
+
+    # print(data)
     output = json.loads(data)
-    merged_pdf = requests.post(pdf, json=output)
-    print(merged_pdf.json())
+    fin = requests.post(merger, json=output)
+    response = fin.json()
+    print(response)
+    return str(response['Files'][0]['Url'])
+ 
+    # pdfs = []
+    # for image in images:
+    #     data = '{"Parameters": [{"Name": "File", "FileValue": {"Url": "' + image[0] +  '"}}, {"Name": "StoreFile", "Value": true}]}'
+    #     print(data)
+    #     output = json.loads(data)
+    #     img_pdf = requests.post(pdf, json=output)
+    #     final_pdf = img_pdf.json()
+    #     pdfs.append(final_pdf['Files'][0]['Url'])
+    # print(pdfs)
+
+    # # MERGE PDFs
+    # data = '''{"Parameters": [{"Name": "Files","FileValues": ['''
+    # for i in range(len(pdfs)):
+    #     data += '{"Url": "' + pdfs[i] +'"}'
+    #     if i != len(pdfs)-1:
+    #         data += ","
+    # data += ']},{"Name": "StoreFile","Value": true}]}'
+    # print(data)
+    # output = json.loads(data)
+    # merged_pdf = requests.post(pdf, json=output)
+    # print(merged_pdf.json())
 
 
 if __name__ == "__main__":
