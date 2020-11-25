@@ -14,7 +14,7 @@ merger = dev['pdf_merger']
 DATABASE_URL = dev['CLEARDB_DATABASE_URL']
 user, password, host, db = database_config(DATABASE_URL)
 
-
+print(user, password, host, db)
 app.config['MYSQL_HOST'] = host
 app.config['MYSQL_USER'] = user
 app.config['MYSQL_PASSWORD'] = password
