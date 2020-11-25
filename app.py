@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 import yaml
 import requests
 import json
+from dbConfig import database_config
 
 app = Flask(__name__)
 
@@ -10,11 +11,14 @@ dev = yaml.load(open('db.yaml'), Loader=yaml.FullLoader)
 
 pdf = dev['pdf_maker']
 merger = dev['pdf_merger']
+DATABASE_URL = dev['CLEARDB_DATABASE_URL']
+user, password, host, db = database_config(DATABASE_URL)
 
-app.config['MYSQL_HOST'] = dev['mysql_host']
-app.config['MYSQL_USER'] = dev['mysql_user']
-app.config['MYSQL_PASSWORD'] = dev['mysql_password']
-app.config['MYSQL_DB'] = dev['mysql_db']
+
+app.config['MYSQL_HOST'] = host
+app.config['MYSQL_USER'] = user
+app.config['MYSQL_PASSWORD'] = password
+app.config['MYSQL_DB'] = db
 
 mysql = MySQL(app)
 api_token = dev['token']
