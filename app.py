@@ -43,7 +43,9 @@ def go():
 def test():
     if request.method == "POST":
         data = request.get_json()
-        print(data)
+        userId = data['message']['from']['id']
+        text = data['message']['text']
+        requests.get(baseUrl + "sendMessage?chat_id={}&text={}".format(userId, text))
         return Response('Ok', status=200)
     else:
         return "GET REQUEST"
