@@ -6,7 +6,7 @@ import json
 from dbConfig import database_config
 import os
 
-env = "dev"
+env = ""
 
 app = Flask(__name__)
 
