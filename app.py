@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_mysqldb import MySQL
 import yaml
 import requests
@@ -6,7 +6,7 @@ import json
 from dbConfig import database_config
 import os
 
-env = ""
+env = "dev"
 
 app = Flask(__name__)
 
@@ -39,6 +39,13 @@ baseUrlFile = "https://api.telegram.org/file/bot{}".format(api_token)
 def go():
     return "Success"
 
+@app.route("/test", methods=['POST', 'GET'])
+def test():
+    if request.method == "POST":
+        return "POST REQUEST"
+    else:
+        return "GET REQUEST"
+    
 @app.route("/start")
 def start():    
     r = requests.get(baseUrl+"/getUpdates")
