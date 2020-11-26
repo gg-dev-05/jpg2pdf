@@ -45,6 +45,8 @@ def test():
         data = request.get_json()
         userId = data['message']['from']['id']
         text = data['message']['text']
+        print(data)
+        print(userId, text)
         requests.get(baseUrl + "sendMessage?chat_id={}&text={}".format(userId, text))
         return Response('Ok', status=200)
     else:
