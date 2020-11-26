@@ -47,8 +47,8 @@ def test():
         text = data['message']['text']
         print(data)
         print(userId, text)
-        print(baseUrl + "sendMessage?chat_id={}&text={}".format(userId, text))
-        requests.get(baseUrl + "sendMessage?chat_id={}&text={}".format(userId, text))
+        print(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, text))
+        requests.get(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, text))
         return Response('Ok', status=200)
     else:
         return "GET REQUEST"
