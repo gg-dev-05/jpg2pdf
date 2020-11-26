@@ -26,6 +26,10 @@ baseUrl = "https://api.telegram.org/bot{}".format(api_token)
 baseUrlFile = "https://api.telegram.org/file/bot{}".format(api_token)
 
 @app.route("/")
+def go():
+    return "Success"
+
+@app.route("/start")
 def start():    
     r = requests.get(baseUrl+"/getUpdates")
     # print(baseUrl+"/getUpdates")
