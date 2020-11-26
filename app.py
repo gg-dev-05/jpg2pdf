@@ -4,14 +4,25 @@ import yaml
 import requests
 import json
 from dbConfig import database_config
+import os
+
+env = ""
 
 app = Flask(__name__)
 
-dev = yaml.load(open('db.yaml'), Loader=yaml.FullLoader)
+if env == "dev":
+    dev = yaml.load(open('db.yaml'), Loader=yaml.FullLoader)
+    pdf = dev['pdf_maker']
+    merger = dev['pdf_merger']
+    DATABASE_URL = dev['CLEARDB_DATABASE_URL']
+    api_token = dev['token']
 
-pdf = dev['pdf_maker']
-merger = dev['pdf_merger']
-DATABASE_URL = dev['CLEARDB_DATABASE_URL']
+else:
+    pdf = os.environ.get("pdf_maker")
+    merger = os.environ.get("pdf_merger")
+    DATABASE_URL = os.environ.get("CLEARDB_DATABASE_URL")
+    api_token = os.environ.get("token")
+
 user, password, host, db = database_config(DATABASE_URL)
 
 print(user, password, host, db)
@@ -21,7 +32,6 @@ app.config['MYSQL_PASSWORD'] = password
 app.config['MYSQL_DB'] = db
 
 mysql = MySQL(app)
-api_token = dev['token']
 baseUrl = "https://api.telegram.org/bot{}".format(api_token)
 baseUrlFile = "https://api.telegram.org/file/bot{}".format(api_token)
 
@@ -147,4 +157,7 @@ def make_pdfs(userId):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    if env == "dev":
+        app.run(debug=True)
+    else:
+        app.run()
