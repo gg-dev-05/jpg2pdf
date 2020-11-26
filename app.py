@@ -43,12 +43,26 @@ def go():
 def test():
     if request.method == "POST":
         data = request.get_json()
+
         userId = data['message']['from']['id']
-        text = data['message']['text']
-        print(data)
-        print(userId, text)
-        print(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, text))
-        requests.get(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, text))
+        
+
+        if 'text' in data['message'] and data['message']['text'] == "/start":
+            text = "Starting Command for making pdfs"
+            send_message(userId, text)
+
+        elif 'document' in data['message']:
+            fileId = data['message']['document']['file_id']
+            p = requests.get(baseUrl+"/getFile?file_id={}".format(fileId))
+            fileDetails = p.json()
+            file_path = fileDetails['result']['file_path']
+            link = baseUrlFile+"/{}".format(file_path)
+            send_message(userId, "Here is a link to you uploaded file:{}".format(link))
+
+        elif 'text' in data['message'] and data['message']['text'] == "/pdf":
+            text = "Making pdfs of sent files"
+            send_message(userId, text)
+            
         return Response('Ok', status=200)
     else:
         return "GET REQUEST"
@@ -79,6 +93,9 @@ def start():
 
     return "Success"
 
+def send_message(userId, message):
+    print(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, message))
+    requests.get(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, message))
 
 def createUser(userID, offset_value):
     cur = mysql.connection.cursor()
