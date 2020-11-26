@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, Response
 from flask_mysqldb import MySQL
 import yaml
 import requests
@@ -42,7 +42,9 @@ def go():
 @app.route("/test", methods=['POST', 'GET'])
 def test():
     if request.method == "POST":
-        return "POST REQUEST"
+        data = request.get_json()
+        print(data)
+        return Response('Ok', status=200)
     else:
         return "GET REQUEST"
     
