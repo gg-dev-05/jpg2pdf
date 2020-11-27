@@ -100,7 +100,8 @@ def test():
             #           make_pdf(item)
             # Merge all created pdfs
             # send_message(merged_pdf_link)
-
+        else:
+            send_message(userId, "Sorry I was not able to catch what you meant!!")
 
         return Response('Ok', status=200)
     else:
@@ -134,7 +135,7 @@ def start():
 
 def send_message(userId, message):
     print(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, message))
-    requests.get(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, message))
+    requests.get(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html".format(userId, message))
 
 def createUser(userID, offset_value):
     cur = mysql.connection.cursor()
