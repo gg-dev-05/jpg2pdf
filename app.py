@@ -75,7 +75,7 @@ def test():
             time.sleep(1)
             send_message(userId, "Checking if user is present")
             time.sleep(0.6)
-            send_message(userId, "link of image added to user_"+userId+" table")
+            send_message(userId, "link of image added to user_"+str(userId)+" table")
             # check if user exists in users table
 
             # if not present - Add to users table, create table user_userID
@@ -153,7 +153,7 @@ def createUser(userID, offset_value):
         cur.execute("CREATE TABLE user_{}(image VARCHAR(2000));".format(userID))
         mysql.connection.commit()
         cur.close()
-        print("user_", userID, " inserted to users and table created")
+        print("user_", str(userID), " inserted to users and table created")
 
 def newImage(link, userId):
     cur = mysql.connection.cursor()
