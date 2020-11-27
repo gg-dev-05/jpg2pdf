@@ -5,6 +5,7 @@ import requests
 import json
 from dbConfig import database_config
 import os
+import time
 
 env = ""
 
@@ -50,12 +51,18 @@ def test():
         if 'text' in data['message'] and data['message']['text'] == "/start":
             text = "Starting Command for making pdfs"
             send_message(userId, text)
-
+            time.sleep(1)
+            send_message(userId, "Checking if user is present")
+            time.sleep(0.6)
+            send_message(userId, "Delete all from database")
             # Check if user id is present in users table
 
             # if not present - Add to users table, create table user_userID
 
             # else Delete all from user_userId table
+
+        elif 'text' in data['message'] and data['message']['text'] == '/help':
+            send_message(userId, "<b>This bot is under development</b>. More info on github.com/gg-dev-05/jpg2pdf")
 
         elif 'document' in data['message']:
             fileId = data['message']['document']['file_id']
@@ -64,7 +71,11 @@ def test():
             file_path = fileDetails['result']['file_path']
             link = baseUrlFile+"/{}".format(file_path)
             send_message(userId, "Thanks for that file")
-
+            
+            time.sleep(1)
+            send_message(userId, "Checking if user is present")
+            time.sleep(0.6)
+            send_message(userId, "link of image added to user_"+userId+" table")
             # check if user exists in users table
 
             # if not present - Add to users table, create table user_userID
@@ -76,6 +87,11 @@ def test():
             text = "Making pdfs of sent files"
             send_message(userId, text)
 
+            
+            time.sleep(1)
+            send_message(userId, "Checking if user is present")
+            time.sleep(0.6)
+            send_message(userId, "link of merged pdf from user_"+userId+" table")
             # check if user exists in users table
 
             # if not present - Add to users table, create table user_userID and send_message("give me jpg files")
