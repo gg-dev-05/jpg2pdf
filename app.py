@@ -51,18 +51,41 @@ def test():
             text = "Starting Command for making pdfs"
             send_message(userId, text)
 
+            # Check if user id is present in users table
+
+            # if not present - Add to users table, create table user_userID
+
+            # else Delete all from user_userId table
+
         elif 'document' in data['message']:
             fileId = data['message']['document']['file_id']
             p = requests.get(baseUrl+"/getFile?file_id={}".format(fileId))
             fileDetails = p.json()
             file_path = fileDetails['result']['file_path']
             link = baseUrlFile+"/{}".format(file_path)
-            send_message(userId, "Here is a link to you uploaded file:{}".format(link))
+            send_message(userId, "Thanks for that file")
+
+            # check if user exists in users table
+
+            # if not present - Add to users table, create table user_userID
+
+            # Add link to user_userId table
+
 
         elif 'text' in data['message'] and data['message']['text'] == "/pdf":
             text = "Making pdfs of sent files"
             send_message(userId, text)
-            
+
+            # check if user exists in users table
+
+            # if not present - Add to users table, create table user_userID and send_message("give me jpg files")
+
+            # else for item in user_id:
+            #           make_pdf(item)
+            # Merge all created pdfs
+            # send_message(merged_pdf_link)
+
+
         return Response('Ok', status=200)
     else:
         return "GET REQUEST"
