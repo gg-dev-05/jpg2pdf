@@ -91,7 +91,7 @@ def test():
             time.sleep(1)
             send_message(userId, "Checking if user is present")
             time.sleep(0.6)
-            send_message(userId, "link of merged pdf from user_"+userId+" table")
+            send_message(userId, "link of merged pdf from user_"+str(userId)+" table")
             # check if user exists in users table
 
             # if not present - Add to users table, create table user_userID and send_message("give me jpg files")
