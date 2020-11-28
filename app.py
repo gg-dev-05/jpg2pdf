@@ -27,7 +27,7 @@ else:
 
 user, password, host, db = database_config(DATABASE_URL)
 
-print(user, password, host, db)
+# print(user, password, host, db)
 app.config['MYSQL_HOST'] = host
 app.config['MYSQL_USER'] = user
 app.config['MYSQL_PASSWORD'] = password

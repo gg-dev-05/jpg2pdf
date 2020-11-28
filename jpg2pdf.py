@@ -1,7 +1,7 @@
 import requests, json, yaml
 
 
-def make_pdfs(links, env="")
+def make_pdfs(links, env=""):
     # links = ["https://picsum.photos/200/300", "https://picsum.photos/200/300", "https://picsum.photos/200/300", "https://picsum.photos/200/300"]
 
     # dev = yaml.load(open('db.yaml'), Loader=yaml.FullLoader)
