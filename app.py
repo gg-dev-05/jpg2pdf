@@ -4,6 +4,7 @@ import yaml
 import requests
 import json
 from dbConfig import database_config
+from jpg2pdf import make_pdfs
 import os
 import time
 
@@ -51,15 +52,10 @@ def test():
         if 'text' in data['message'] and data['message']['text'] == "/start":
             text = "Starting Command for making pdfs"
             send_message(userId, text)
-            time.sleep(1)
-            send_message(userId, "Checking if user is present")
-            time.sleep(0.6)
-            send_message(userId, "Delete all from database")
-            # Check if user id is present in users table
 
-            # if not present - Add to users table, create table user_userID
+            createUser(userId)
 
-            # else Delete all from user_userId table
+            emptyTable(userId)
 
         elif 'text' in data['message'] and data['message']['text'] == '/help':
             send_message(userId, "<b>This bot is under development</b>. More info on github.com/gg-dev-05/jpg2pdf")
@@ -70,17 +66,10 @@ def test():
             fileDetails = p.json()
             file_path = fileDetails['result']['file_path']
             link = baseUrlFile+"/{}".format(file_path)
-            send_message(userId, "Thanks for that file")
             
-            time.sleep(1)
-            send_message(userId, "Checking if user is present")
-            time.sleep(0.6)
-            send_message(userId, "link of image added to user_"+str(userId)+" table")
-            # check if user exists in users table
-
-            # if not present - Add to users table, create table user_userID
-
-            # Add link to user_userId table
+            createUser(userId)
+            
+            newImage(link, userId)
 
 
         elif 'text' in data['message'] and data['message']['text'] == "/pdf":
@@ -88,10 +77,10 @@ def test():
             send_message(userId, text)
 
             
-            time.sleep(1)
-            send_message(userId, "Checking if user is present")
-            time.sleep(0.6)
-            send_message(userId, "link of merged pdf from user_"+str(userId)+" table")
+            createUser(userId)
+
+            createFinalPdf(userId)
+            
             # check if user exists in users table
 
             # if not present - Add to users table, create table user_userID and send_message("give me jpg files")
@@ -137,7 +126,7 @@ def send_message(userId, message):
     print(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, message))
     requests.get(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html".format(userId, message))
 
-def createUser(userID, offset_value):
+def createUser(userID):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM users")
     users = cur.fetchall()
@@ -145,87 +134,40 @@ def createUser(userID, offset_value):
     for user in users:
         if(str(user[0]) == str(userID)):
             present = True
-            print("Already Present")
+            send_message(userID, "You are already present in the database, GOOD!!")
             break
 
     if(not present):
-        cur.execute("INSERT INTO users VALUES('{}', '{}');".format(userID, offset_value))  
+        cur.execute("INSERT INTO users VALUES('{}');".format(userID))  
         cur.execute("CREATE TABLE user_{}(image VARCHAR(2000));".format(userID))
         mysql.connection.commit()
         cur.close()
-        print("user_", str(userID), " inserted to users and table created")
+        send_message(userID, str(userID) + " inserted in the database")
+
+def emptyTable(userID):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM user_".format(str(userID)))
+    mysql.connection.commit()
+    cur.close()
+    send_message(userID, "Your table is cleared")
 
 def newImage(link, userId):
     cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO user_{} VALUES('{}');".format(userId, link))
+    cur.execute("INSERT INTO user_{} VALUES('{}');".format(str(userId), link))
     cur.connection.commit()
     cur.close()
-    print(link, "added to user_", userId)
+    send_message(userId, "Here is a link to the sent image:" + str(link))
 
-def removeAllOldImages(userId, offset_value):
+def createFinalPdf(userId):
+    # Get all links from the database
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM user_{}".format(userId))
-    cur.execute("UPDATE users SET offset_value='{}' where userId = '{}';".format(offset_value, userId))
-    cur.connection.commit()
-    cur.close()
-    print("Old Images removed")
-
-def make_pdfs(userId):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM user_{}".format(userId))
+    cur.execute("SELECT image FROM user_{}".format(str(userId)))
     links = cur.fetchall()
 
-    
-    pdf_links = []
-    for i in links:
-        data = '{"Parameters": [{"Name": "File","FileValue": {"Url":"' + i[0] + '"}},{"Name": "StoreFile","Value": true}]}'
-        # print(data)
-        output = json.loads(data)
-
-        fin = requests.post(pdf, json=output)
-        response = fin.json()
-        # print(response['Files'][0]['Url'])
-        pdf_links.append(response['Files'][0]['Url'])
-
-
-    data = '{"Parameters": [{"Name": "Files","FileValues": ['
-
-    for i in range(len(pdf_links)):
-        data += '{"Url": " '+ pdf_links[i] +'"}'
-        if(i != len(pdf_links)-1):
-            data += ","
-
-    data += ']},{"Name": "StoreFile","Value": true}]}'
-
-    # print(data)
-    output = json.loads(data)
-    fin = requests.post(merger, json=output)
-    response = fin.json()
-    print(response)
-    return str(response['Files'][0]['Url'])
- 
-    # pdfs = []
-    # for image in images:
-    #     data = '{"Parameters": [{"Name": "File", "FileValue": {"Url": "' + image[0] +  '"}}, {"Name": "StoreFile", "Value": true}]}'
-    #     print(data)
-    #     output = json.loads(data)
-    #     img_pdf = requests.post(pdf, json=output)
-    #     final_pdf = img_pdf.json()
-    #     pdfs.append(final_pdf['Files'][0]['Url'])
-    # print(pdfs)
-
-    # # MERGE PDFs
-    # data = '''{"Parameters": [{"Name": "Files","FileValues": ['''
-    # for i in range(len(pdfs)):
-    #     data += '{"Url": "' + pdfs[i] +'"}'
-    #     if i != len(pdfs)-1:
-    #         data += ","
-    # data += ']},{"Name": "StoreFile","Value": true}]}'
-    # print(data)
-    # output = json.loads(data)
-    # merged_pdf = requests.post(pdf, json=output)
-    # print(merged_pdf.json())
-
+    print(links)
+    send_message("All Ok Creating pdfs")
+    make_pdfs(links)
+    # Make pdf from the given links
 
 if __name__ == "__main__":
     if env == "dev":
