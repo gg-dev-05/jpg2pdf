@@ -142,7 +142,7 @@ def createFinalPdf(userId):
 
     print(links)
     send_message(userId, "All Ok Creating pdfs")
-    make_pdfs(links)
+    print(make_pdfs(links))
     # Make pdf from the given links
 
 if __name__ == "__main__":

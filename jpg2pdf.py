@@ -19,7 +19,7 @@ def make_pdfs(links, env=""):
     
     pdf_links = []
     for i in links:
-        data = '{"Parameters": [{"Name": "File","FileValue": {"Url":"' + i + '"}},{"Name": "StoreFile","Value": true}]}'
+        data = '{"Parameters": [{"Name": "File","FileValue": {"Url":"' + i[0] + '"}},{"Name": "StoreFile","Value": true}]}'
         # print(data)
         output = json.loads(data)
 
