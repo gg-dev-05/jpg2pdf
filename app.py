@@ -8,7 +8,7 @@ from jpg2pdf import make_pdfs
 import os
 import time
 
-env = ""
+env = "dev"
 
 app = Flask(__name__)
 
@@ -98,27 +98,7 @@ def test():
     
 @app.route("/start")
 def start():    
-    r = requests.get(baseUrl+"/getUpdates")
-    # print(baseUrl+"/getUpdates")
-    data = r.json()
-    # print(data)
-    for i in data['result']:
-        id = i['message']['from']['id']
-        offset_value = i['update_id']
-        createUser(id, offset_value)
-
-        if 'text' in i['message'] and i['message']['text'] == "/start":
-            removeAllOldImages(id,offset_value)
-        if 'document' in i['message']:
-            fileId = i['message']['document']['file_id']
-            p = requests.get(baseUrl+"/getFile?file_id={}".format(fileId))
-            fileDetails = p.json()
-            file_path = fileDetails['result']['file_path']
-            link = baseUrlFile+"/{}".format(file_path)
-            newImage(link, id)
-        if 'text' in i['message'] and i['message']['text'] == "/pdf":
-            link = make_pdfs(id)
-            return link
+    createUser(1021461289)
 
     return "Success"
 
@@ -130,6 +110,7 @@ def createUser(userID):
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM users")
     users = cur.fetchall()
+    print(users)
     present = False
     for user in users:
         if(str(user[0]) == str(userID)):
@@ -165,7 +146,7 @@ def createFinalPdf(userId):
     links = cur.fetchall()
 
     print(links)
-    send_message("All Ok Creating pdfs")
+    send_message(userId, "All Ok Creating pdfs")
     make_pdfs(links)
     # Make pdf from the given links
 
