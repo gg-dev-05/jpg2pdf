@@ -146,7 +146,7 @@ def createUser(userID):
 
 def emptyTable(userID):
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM user_".format(str(userID)))
+    cur.execute("DELETE FROM user_{}".format(str(userID)))
     mysql.connection.commit()
     cur.close()
     send_message(userID, "Your table is cleared")
