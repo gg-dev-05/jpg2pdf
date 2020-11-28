@@ -1,5 +1,5 @@
 import requests, json, yaml
-
+import os
 
 def make_pdfs(links, env=""):
     # links = ["https://picsum.photos/200/300", "https://picsum.photos/200/300", "https://picsum.photos/200/300", "https://picsum.photos/200/300"]
