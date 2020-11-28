@@ -8,7 +8,7 @@ from jpg2pdf import make_pdfs
 import os
 import time
 
-env = "dev"
+env = ""
 
 app = Flask(__name__)
 
@@ -95,12 +95,7 @@ def test():
         return Response('Ok', status=200)
     else:
         return "GET REQUEST"
-    
-@app.route("/start")
-def start():    
-    createUser(1021461289)
 
-    return "Success"
 
 def send_message(userId, message):
     print(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, message))
