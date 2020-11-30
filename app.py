@@ -162,7 +162,7 @@ def createFinalPdf(userId):
             response = make_pdfs(links_list)
 
         print(response)
-        send_message(userId, "Here is the link for your created pdf: " + str(response['Files']['Url']))
+        send_message(userId, "Here is the link for your created pdf: " + str(response['Files'][0]['Url']))
         # Make pdf from the given links
 
 if __name__ == "__main__":
