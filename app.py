@@ -75,6 +75,17 @@ def test():
             
             newImage(link, userId, messageId)
 
+        elif 'photo' in data['message']:
+            fileId = data['message']['photo'][-1]['file_id']
+            messageId = data['message']['message_id']
+            p = requests.get(baseUrl+"/getFile?file_id={}".format(fileId))
+            fileDetails = p.json()
+            file_path = fileDetails['result']['file_path']
+            link = baseUrlFile+"/{}".format(file_path)
+
+            createUser(userId)
+            
+            newImage(link, userId, messageId)
 
         elif 'text' in data['message'] and data['message']['text'] == "/pdf":
             text = "Making pdfs of sent files"
