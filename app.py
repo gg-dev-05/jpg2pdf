@@ -46,7 +46,7 @@ def test():
     if request.method == "POST":
         data = request.get_json()
         print(data)
-        break
+        
         userId = data['message']['from']['id']
         
 
