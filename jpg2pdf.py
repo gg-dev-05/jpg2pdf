@@ -16,10 +16,15 @@ def make_pdfs(links, env=""):
     else:
         url_pdf = os.environ.get("pdf_maker")
         url_merge = os.environ.get("pdf_merger")
-    
-    pdf_links = []
+    print(url_merge, url_pdf)
+    # print(links)
+    links_list = []
     for i in links:
-        data = '{"Parameters": [{"Name": "File","FileValue": {"Url":"' + i[0] + '"}},{"Name": "StoreFile","Value": true}]}'
+        links_list.append(i[0])
+    # print(links_list)
+    pdf_links = []
+    for i in links_list:
+        data = '{"Parameters": [{"Name": "File","FileValue": {"Url":"' + i + '"}},{"Name": "StoreFile","Value": true}]}'
         # print(data)
         output = json.loads(data)
 

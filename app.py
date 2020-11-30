@@ -9,6 +9,8 @@ import os
 import time
 
 env = ""
+global msg
+msg = ""
 
 app = Flask(__name__)
 
@@ -93,6 +95,8 @@ def test():
         else:
             send_message(userId, "Sorry I was not able to catch what you meant!!")
 
+        if env == "dev":
+            return Response(msg, status=200)
         return Response('Ok', status=200)
     else:
         return "GET REQUEST"
@@ -100,7 +104,11 @@ def test():
 
 def send_message(userId, message):
     print(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, message))
-    requests.get(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html".format(userId, message))
+    if(env == "dev"):
+        global msg
+        msg += message + "\n"
+    else:
+        requests.get(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html".format(userId, message))
 
 def createUser(userID):
     cur = mysql.connection.cursor()
@@ -143,7 +151,10 @@ def createFinalPdf(userId):
 
     print(links)
     send_message(userId, "All Ok Creating pdfs")
-    print(make_pdfs(links))
+    if env == 'dev':
+        print(make_pdfs(links, "dev"))
+    else:
+        print(make_pdfs(links))
     # Make pdf from the given links
 
 if __name__ == "__main__":
