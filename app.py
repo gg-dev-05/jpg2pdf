@@ -112,7 +112,7 @@ def createUser(userID):
         if(str(user[0]) == str(userID)):
             present = True
             send_message(userID, "You are already present in the database, GOOD!!")
-            break
+            
 
     if(not present):
         cur.execute("INSERT INTO users VALUES('{}');".format(userID))  
