@@ -110,8 +110,10 @@ def send_message(userId, message, messageId = None):
         msg += message + "\n"
     else:
         if messageId == None:
+            print(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html".format(userId, message))
             requests.get(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html".format(userId, message))
         else:
+            print(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html&reply_to_msg_id={}".format(userId, message, messageId))
             requests.get(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html&reply_to_msg_id={}".format(userId, message, messageId))
 
 
