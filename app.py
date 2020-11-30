@@ -65,6 +65,7 @@ def test():
 
         elif 'document' in data['message']:
             fileId = data['message']['document']['file_id']
+            messageId = data['message']['message_id']
             p = requests.get(baseUrl+"/getFile?file_id={}".format(fileId))
             fileDetails = p.json()
             file_path = fileDetails['result']['file_path']
@@ -72,7 +73,7 @@ def test():
             
             createUser(userId)
             
-            newImage(link, userId)
+            newImage(link, userId, messageId)
 
 
         elif 'text' in data['message'] and data['message']['text'] == "/pdf":
@@ -102,13 +103,17 @@ def test():
         return "GET REQUEST"
 
 
-def send_message(userId, message):
+def send_message(userId, message, messageId = None):
     print(baseUrl + "/sendMessage?chat_id={}&text={}".format(userId, message))
     if(env == "dev"):
         global msg
         msg += message + "\n"
     else:
-        requests.get(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html".format(userId, message))
+        if messageId == None:
+            requests.get(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html".format(userId, message))
+        else:
+            requests.get(baseUrl + "/sendMessage?chat_id={}&text={}&parse_mode=html&reply_to_msg_id={}".format(userId, message, messageId))
+
 
 def createUser(userID):
     cur = mysql.connection.cursor()
@@ -136,12 +141,12 @@ def emptyTable(userID):
     cur.close()
     send_message(userID, "Your table is cleared")
 
-def newImage(link, userId):
+def newImage(link, userId, message_id):
     cur = mysql.connection.cursor()
     cur.execute("INSERT INTO user_{} VALUES('{}');".format(str(userId), link))
     cur.connection.commit()
     cur.close()
-    send_message(userId, "Here is a link to the sent image:" + str(link))
+    send_message(userId, "Here is a link to the sent image:" + str(link), message_id)
 
 def createFinalPdf(userId):
     # Get all links from the database
