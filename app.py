@@ -148,14 +148,22 @@ def createFinalPdf(userId):
     cur = mysql.connection.cursor()
     cur.execute("SELECT image FROM user_{}".format(str(userId)))
     links = cur.fetchall()
-
-    print(links)
-    send_message(userId, "All Ok Creating pdfs")
-    if env == 'dev':
-        print(make_pdfs(links, "dev"))
+    links_list = []
+    for i in links:
+        links_list.append(i[0])
+    print(links_list)
+    if len(links_list) == 0:
+        send_message(userId, "Please atleast give me some jpg images to make pdfs")
     else:
-        print(make_pdfs(links))
-    # Make pdf from the given links
+        send_message(userId, "All Ok Creating pdfs")
+        if env == 'dev':
+            response = make_pdfs(links_list, "dev")
+        else:
+            response = make_pdfs(links_list)
+
+        print(response)
+        send_message(userId, "Here is the link for your created pdf: " + str(response['Files']['Url']))
+        # Make pdf from the given links
 
 if __name__ == "__main__":
     if env == "dev":

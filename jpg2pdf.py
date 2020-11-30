@@ -1,7 +1,7 @@
 import requests, json, yaml
 import os
 
-def make_pdfs(links, env=""):
+def make_pdfs(links_list, env=""):
     # links = ["https://picsum.photos/200/300", "https://picsum.photos/200/300", "https://picsum.photos/200/300", "https://picsum.photos/200/300"]
 
     # dev = yaml.load(open('db.yaml'), Loader=yaml.FullLoader)
@@ -16,11 +16,9 @@ def make_pdfs(links, env=""):
     else:
         url_pdf = os.environ.get("pdf_maker")
         url_merge = os.environ.get("pdf_merger")
-    print(url_merge, url_pdf)
+    # print(url_merge, url_pdf)
     # print(links)
-    links_list = []
-    for i in links:
-        links_list.append(i[0])
+    
     # print(links_list)
     pdf_links = []
     for i in links_list:
